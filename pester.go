@@ -80,6 +80,7 @@ type ErrEntry struct {
 	Err           error
 	ResStatus     string
 	ResStatusCode int
+	ResBody       string
 }
 
 // result simplifies the channel communication for concurrent request handling
@@ -360,6 +361,10 @@ func (c *Client) pester(p params) (*http.Response, error) {
 				if resp != nil {
 					errEntry.ResStatus = resp.Status
 					errEntry.ResStatusCode = resp.StatusCode
+					b, err := io.ReadAll(resp.Body)
+					if err == nil {
+						errEntry.ResBody = string(b)
+					}
 				}
 
 				loggingContext := req.Context()
