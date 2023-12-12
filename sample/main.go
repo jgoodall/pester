@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jgoodall/pester"
+	"github.com/sethgrid/pester"
 )
 
 func init() {
