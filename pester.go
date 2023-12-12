@@ -27,7 +27,7 @@ const (
 	contentTypeFormURLEncoded = "application/x-www-form-urlencoded"
 )
 
-//ErrUnexpectedMethod occurs when an http.Client method is unable to be mapped from a calling method in the pester client
+// ErrUnexpectedMethod occurs when an http.Client method is unable to be mapped from a calling method in the pester client
 var ErrUnexpectedMethod = errors.New("unexpected client method, must be one of Do, Get, Head, Post, or PostFrom")
 
 // ErrReadingBody happens when we cannot read the body bytes
@@ -70,14 +70,16 @@ type Client struct {
 // each time an error happens if KeepLog is set.
 // ErrEntry.Retry is deprecated in favor of ErrEntry.Attempt
 type ErrEntry struct {
-	Time    time.Time
-	Method  string
-	URL     string
-	Verb    string
-	Request int
-	Retry   int
-	Attempt int
-	Err     error
+	Time          time.Time
+	Method        string
+	URL           string
+	Verb          string
+	Request       int
+	Retry         int
+	Attempt       int
+	Err           error
+	ResStatus     string
+	ResStatusCode int
 }
 
 // result simplifies the channel communication for concurrent request handling
@@ -345,19 +347,25 @@ func (c *Client) pester(p params) (*http.Response, error) {
 					return
 				}
 
+				errEntry := ErrEntry{
+					Time:    time.Now(),
+					Method:  p.method,
+					Verb:    req.Method,
+					URL:     req.URL.String(),
+					Request: n,
+					Retry:   i + 1, // would remove, but would break backward compatibility
+					Attempt: i,
+					Err:     err,
+				}
+				if resp != nil {
+					errEntry.ResStatus = resp.Status
+					errEntry.ResStatusCode = resp.StatusCode
+				}
+
 				loggingContext := req.Context()
 				c.log(
 					loggingContext,
-					ErrEntry{
-						Time:    time.Now(),
-						Method:  p.method,
-						Verb:    req.Method,
-						URL:     req.URL.String(),
-						Request: n,
-						Retry:   i + 1, // would remove, but would break backward compatibility
-						Attempt: i,
-						Err:     err,
-					},
+					errEntry,
 				)
 
 				// if it is the last iteration, grab the result (which is an error at this point)
