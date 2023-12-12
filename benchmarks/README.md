@@ -1,6 +1,6 @@
 # Timing Tests
 
-It was noted in [issue #2](github.com/sethgrid/pester/issue/2) that Pester may be slower than the standard library (along with bug that was fixed).
+It was noted in [issue #2](github.com/jgoodall/pester/issue/2) that Pester may be slower than the standard library (along with bug that was fixed).
 
 I put together a quick test to see how Pester fairs against the stand library. Here are the results:
 

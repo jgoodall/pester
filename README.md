@@ -46,7 +46,7 @@ import (
     "net/http"
     "strings"
 
-    "github.com/sethgrid/pester"
+    "github.com/jgoodall/pester"
 )
 
 func main() {
